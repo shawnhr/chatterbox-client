@@ -7,7 +7,6 @@ describe('chatterbox', function() {
     it('should have a method called init', function() {
       expect(app.init).to.be.ok;
     });
-
   });
 
   describe('app behavior', function() {
@@ -39,7 +38,7 @@ describe('chatterbox', function() {
       it('should send the correct message along with the request', function(done) {
         var message = {
           username: 'Mel Brooks',
-          text: 'It\'s good to be the king',
+          text: "It's good to be the king",
           roomname: 'lobby'
         };
 
@@ -49,7 +48,6 @@ describe('chatterbox', function() {
         expect(result).to.deep.equal(message);
         done();
       });
-
     });
 
     describe('fetching', function() {
@@ -64,12 +62,11 @@ describe('chatterbox', function() {
         expect(ajaxUrl).to.equal(app.server);
         done();
       });
-
     });
 
     describe('chatroom behavior', function() {
       it('should be able to clear messages from the DOM', function() {
-        var orig = $('#chats').html('<blink>OMG IT\'s 1998!</blink>');
+        var orig = $('#chats').html("<blink>OMG IT's 1998!</blink>");
         app.clearMessages();
         expect($('#chats').children().length).to.equal(0);
       });
@@ -88,10 +85,10 @@ describe('chatterbox', function() {
 
       it('should be able to add rooms to the DOM', function() {
         app.renderRoom('superLobby');
+        app.renderRoom('nothing to see here');
 
-        expect($('#roomSelect').children().length).to.equal(1);
+        expect($('#roomSelect').children().length).to.equal(2);
       });
-
     });
 
     describe('events', function() {
@@ -100,13 +97,15 @@ describe('chatterbox', function() {
 
         app.renderMessage({
           username: 'Mel Brooks',
-          text: 'I didn\'t get a harumph outa that guy.!',
+          text: "I didn't get a harumph outa that guy.!",
           roomname: 'lobby'
         });
 
         app.init();
 
-        $('#main').find('.username').trigger('click');
+        $('#main')
+          .find('.username')
+          .trigger('click');
         expect(app.handleUsernameClick.called).to.be.true;
 
         app.handleUsernameClick.restore();
