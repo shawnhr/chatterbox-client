@@ -1,44 +1,37 @@
 // YOUR CODE HERE:
-console.log('you are in app.js');
 var app = {
-  // define server
-  // rooms array?
   server: 'http://parse.rpt.hackreactor.com/chatterbox/classes/messages',
   username: window.location.search.substr(window.location.search.lastIndexOf('=') + 1),
   roomname: 'lobby',
   rooms: [],
+  messages: [],
 
   init: function() {
-    // listen for submit button click
-    $('#send .submit').on('click', function(event) {
+    $('#send .submit').on('click', function() {
       event.preventDefault();
-      var text = $('#message').val();
-      // send text from message to text
-      app.handleSubmit(text);
+      app.handleSubmit();
     });
 
-    // add click handler for #roomSelect
     $('#roomSelect').on('change', function(event) {
-      console.log($(this).val());
+      app.handleRoomSelect(event);
     });
 
-    // add an click handler for .username
     $('#chats').on('click', '.username', function(event) {
-      console.log($(this).text());
       app.handleUsernameClick($(this).text());
     });
-    // add text
-    // add username
-    // roomname
   },
   send: function(message) {
-    app.renderMessage(message);
+    //app.renderMessage(message);
     $.ajax({
       url: app.server,
       type: 'POST',
       data: message,
-      contenType: 'application/json',
-      success: function(data) {},
+      //contenType: 'application/json',
+      success: function(data) {
+        app.clearMessages();
+        app.fetch();
+        // app.handleRoomSelect(app.roomname);
+      },
       error: function(data) {
         console.log('chatterbox: Failed to send message', data);
       }
@@ -47,21 +40,20 @@ var app = {
   fetch: function() {
     $.ajax({
       url: app.server,
-      //data: data, // JSON.stringify(message),
       type: 'GET',
       data: {
         order: '-createdAt',
-        limit: 2000
-        // where: { roomname: app.roomname }
+        limit: 6
+        // where: {
+        //   username: {
+        //     $nin: ['anonymous', 'undefined']
+        //   }
+        // }
       },
       contenType: 'application/json',
       success: function(data) {
-        // create a var to hold the results
         var results = data.results;
-        //if roomname not in rooms[];
-        //
-        // push room to rooms[]
-        //  call renderRoom fx with room
+        app.messages = results;
 
         results.forEach(function(ele) {
           if (!app.rooms.includes(ele.roomname)) {
@@ -70,8 +62,6 @@ var app = {
           }
           app.renderMessage(ele);
         });
-
-        // loop over the results and use the renderMessage fx
       },
       error: function(data) {
         console.error('chatterbox: Failed to send message', data);
@@ -79,16 +69,15 @@ var app = {
     });
   },
   clearMessages: function() {
-    $('#chats').remove();
+    $('#chats').html('');
   },
   renderMessage: function(message) {
-    // loop through data
-    // append each object to the #chats
-    // jquery for append
     $('#chats').append(
       '<div class="chat" data=' +
         message.createdAt +
-        '><span class="username">' +
+        '><span class="username ' +
+        app.xssPrevention(message.username) +
+        '">' +
         app.xssPrevention(message.username) +
         '</span> ' +
         app.xssPrevention(message.text) +
@@ -103,23 +92,46 @@ var app = {
     );
   },
 
-  // <option value=''>name</option>
   handleUsernameClick: function(event) {
     // when the user clicks on the usernmae of a message
     // then fetch with a filter ?where={"username":"username”}
     // then Display all messages sent by friends in bold
-    console.log('username:', event);
+
+    var currentFriend = event;
+    currentFriend = '.' + currentFriend;
+    $(currentFriend)
+      .closest('div')
+      .addClass('friend');
   },
-  // send in text from the form
-  handleSubmit: function(text) {
-    // set up the message for sending
+  handleSubmit: function() {
     var message = {
       username: app.username,
-      roomname: app.roomname,
-      text: text
+      roomname: app.roomname || 'lobby',
+      text: $('#message').val()
     };
+    $('#message').val('');
     // send message
     app.send(message);
+  },
+
+  handleRoomSelect: function(event) {
+    var selected = $('#roomSelect').prop('selectedIndex');
+    if (!selected) {
+      newRoom = prompt('Create a new room');
+
+      app.roomname = newRoom;
+      app.renderRoom(newRoom);
+      $('#roomSelect').val(newRoom);
+    } else {
+      app.roomname = $('#roomSelect').val();
+      app.clearMessages();
+      var filtered = app.messages.filter(function(m) {
+        return app.roomname === m.roomname;
+      });
+      for (var el of filtered) {
+        app.renderMessage(el);
+      }
+    }
   },
 
   xssPrevention: function(value) {
