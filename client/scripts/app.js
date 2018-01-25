@@ -32,8 +32,8 @@ var app = {
         app.fetch();
         // app.handleRoomSelect(app.roomname);
       },
-      error: function(data) {
-        console.log('chatterbox: Failed to send message', data);
+      error: function(error) {
+        console.log('chatterbox: Failed to send message', error);
       }
     });
   },
@@ -43,18 +43,17 @@ var app = {
       type: 'GET',
       data: {
         order: '-createdAt',
-        limit: 6
+        limit: 30
         // where: {
         //   username: {
         //     $nin: ['anonymous', 'undefined']
         //   }
         // }
       },
-      contenType: 'application/json',
+      contentType: 'application/json',
       success: function(data) {
         var results = data.results;
         app.messages = results;
-
         results.forEach(function(ele) {
           if (!app.rooms.includes(ele.roomname)) {
             app.renderRoom(ele.roomname);
@@ -63,8 +62,8 @@ var app = {
           app.renderMessage(ele);
         });
       },
-      error: function(data) {
-        console.error('chatterbox: Failed to send message', data);
+      error: function(error) {
+        console.error('chatterbox: Failed to send message', error);
       }
     });
   },
@@ -76,7 +75,7 @@ var app = {
       '<div class="chat" data=' +
         message.createdAt +
         '><span class="username ' +
-        app.xssPrevention(message.username) +
+        app.xssPrevention(message.username).replace(' ', '_') +
         '">' +
         app.xssPrevention(message.username) +
         '</span> ' +
@@ -98,10 +97,10 @@ var app = {
     // then Display all messages sent by friends in bold
 
     var currentFriend = event;
-    currentFriend = '.' + currentFriend;
+    currentFriend = '.' + currentFriend.replace(' ', '_');
     $(currentFriend)
       .closest('div')
-      .addClass('friend');
+      .toggleClass('friend');
   },
   handleSubmit: function() {
     var message = {
@@ -109,18 +108,19 @@ var app = {
       roomname: app.roomname || 'lobby',
       text: $('#message').val()
     };
+    app.send(message);
     $('#message').val('');
     // send message
-    app.send(message);
   },
 
   handleRoomSelect: function(event) {
     var selected = $('#roomSelect').prop('selectedIndex');
     if (!selected) {
       newRoom = prompt('Create a new room');
-
+      newUser = prompt('Enter user name');
       app.roomname = newRoom;
-      app.renderRoom(newRoom);
+      app.username = newUser;
+      //app.renderRoom(newRoom);
       $('#roomSelect').val(newRoom);
     } else {
       app.roomname = $('#roomSelect').val();

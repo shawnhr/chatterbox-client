@@ -5,14 +5,21 @@ body {
     font-family: arial, sans-serif;
 }
 
-#main, #chats {
+#main,
+#chats {
     width: 500px;
     margin: auto;
     text-align: left;
     background: white;
-    padding: 50px 60px;
+    padding: 20px 60px;
     border: solid #ddd;
     border-width: 0 1px 1px 1px;
+}
+
+#chats {
+    max-height: 380px;
+    overflow: scroll;
+    border-bottom: 40px solid #fff;
 }
 
 #main h1 {
@@ -23,7 +30,7 @@ body {
 }
 
 #main h1 span {
-    font-style:italic;
+    font-style: italic;
 }
 
 #main ul {
@@ -32,7 +39,7 @@ body {
 
 #main .error {
     border: 1px solid red;
-    background: #FDEFF0;
+    background: #fdeff0;
     padding: 20px;
 }
 
@@ -52,7 +59,7 @@ form {
     margin-bottom: 20px;
 }
 
-form input[type=text] {
+form input[type='text'] {
     margin-right: 10px;
     width: 70%;
     font-size: 12px;
@@ -87,6 +94,3 @@ form input[type=text] {
     color: #fff;
     background-color: #0090da;
 }
-
-
-

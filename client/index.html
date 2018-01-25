@@ -4,9 +4,9 @@
     <meta charset="utf-8">
     <title>chatterbox</title>
     <link rel="stylesheet" href="styles/styles.css">
-    <!--
+
     <meta http-equiv="Content-Security-Policy" default-src "self">
-  -->
+
     <!-- dependencies -->
     <script src="bower_components/jquery/dist/jquery.js"></script>
     <script src="bower_components/underscore/underscore.js"></script>
@@ -36,14 +36,15 @@ if (!/(&|\?)username=/.test(window.location.search)) {
     <div id="rooms">
       Room:
       <select id="roomSelect">
-      <option>New Room</option>  
+      <option> - Add a New Room</option>
       </select>
     </div>
 
-    <form action="#" id="send" method="post">
-      <input type="text" name="message" id="message"/>
-      <input type="submit" name="submit" class="submit"/>
-    </form> </div>
+    <form action="#" id="send" method="post" class="submit">
+      <input type="text" name="message" id="message" required />
+      <input type="submit" name="submit" class="submit" value="Submit"/>
+    </form>
+
    </div>
 
     <div id="chats"></div>
